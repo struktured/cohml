@@ -6,7 +6,10 @@
 # 28-JUL-2011 Gaius Initial version
 
 # location of JDK - this is on Debian
-JAVA_HOME=/usr/lib/jvm/java-6-sun
+
+if [ -z "$JAVA_HOME" ]; then
+  JAVA_HOME=/usr/lib/jvm/java-6-sun
+fi
 
 # location of Coherence Java and C++ installations
 COHERENCE_HOME=/opt/coherence
