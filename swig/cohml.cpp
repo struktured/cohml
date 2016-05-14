@@ -25,7 +25,7 @@ void Cohml::put(char* k, char* v) {
   cout << __FILE__ << ": Put key=" << vsKey << " value=" << vsVal << endl;
 #endif
 }
-  
+
 const char* Cohml::getCString(char* k) {
   String::View vsKey = k;
   vsRet = cast<String::View>(hCache->get(vsKey));

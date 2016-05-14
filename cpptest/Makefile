@@ -1,6 +1,6 @@
 # Makefile for COH*ML example
 
-COHERENCE_HOME_CPP=/opt/coherence-cpp
+COHERENCE_HOME_CPP=../coherence-cpp
 CPP_OPTS=-g3 -Wall -ansi 
 CPP_INCL=-I$(COHERENCE_HOME_CPP)/include -I.
 CPP_LIB=-L$(COHERENCE_HOME_CPP)/lib
