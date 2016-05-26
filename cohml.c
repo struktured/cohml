@@ -8,6 +8,7 @@ extern "C" {
 #include <caml/custom.h>
 #include <caml/callback.h>
 #include <caml/fail.h>
+#include <caml/compatibility.h>
 } //extern C
 
 // basic includes
