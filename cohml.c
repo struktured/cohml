@@ -85,7 +85,7 @@ extern "C" {
   value caml_coh_getcache(value cn) {
     CAMLparam1(cn);
     char* cache_name = String_val(cn);
-    Cohml* c;
+    Cohml* c = 0;
     try {
       c = new Cohml(cache_name);
     } catch (Exception::View ce) {

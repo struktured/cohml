@@ -1,7 +1,7 @@
 # Makefile for COH*ML based on Makefile for OCI*ML
 
-COH_HOME_CPP=/opt/coherence-cpp
-CCFLAGS=-ccopt -I/usr/lib/ocaml -ccopt -I$(COH_HOME_CPP)/include -ccopt -Wall
+COH_HOME_CPP=$(HOME)/local/
+CCFLAGS=-ccopt -I/usr/lib/ocaml -ccopt -I$(COH_HOME_CPP)/include -ccopt -Wall -Wno-permissive
 COBJS=message.o messagemaplistener.o messageserializer.o cohml.o
 MLOBJS=cohml.cmo log_message.cmo
 
@@ -20,10 +20,10 @@ subscriber:	$(COBJS) $(MLOBJS) subscriber.ml
 	ocamlc -g -annot -custom -o $@ unix.cma $(MLOBJS) subscriber.ml $(COBJS) -cclib -L$(COH_HOME_CPP)/lib -cclib -lstdc++ -cclib -lcoherence -cclib -lcamlrun_shared -cclib -lm
 
 publisher:	$(COBJS) $(MLOBJS) publisher.ml
-	ocamlc -g -annot -custom -o $@ -cclib -L$(COH_HOME_CPP)/lib -cclib -lcoherence unix.cma $(MLOBJS) publisher.ml $(COBJS)
+	ocamlc -g -annot -custom -o $@ -cclib -L$(COH_HOME_CPP)/lib -cclib -lm -cclib -lc -cclib -lstdc++ -cclib -lcoherence unix.cma $(MLOBJS) publisher.ml $(COBJS)
 
 message:	$(COBJS) $(MLOBJS) message.ml
-	ocamlc -g -custom -o $@ -cclib -L$(COH_HOME_CPP)/lib -cclib -lcoherence unix.cma $(MLOBJS) message.ml $(COBJS)
+	ocamlc -g -custom -o $@ -cclib -L$(COH_HOME_CPP)/lib -cclib -lstdc++ -cclib -lcoherence unix.cma $(MLOBJS) message.ml $(COBJS)
 
 
 listener:	$(COBJS) $(MLOBJS) listener.ml

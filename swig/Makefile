@@ -1,6 +1,6 @@
 # makefile for COH*ML (suppress unnecessary warnings)
 
-COHERENCE_HOME_CPP=/opt/coherence-cpp
+COHERENCE_HOME_CPP=../coherence-cpp
 CPP_INCL=-I$(COHERENCE_HOME_CPP)/include
 CPP_LIB=-L$(COHERENCE_HOME_CPP)/lib
 
