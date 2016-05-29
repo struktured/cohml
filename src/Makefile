@@ -4,7 +4,7 @@ OCAML_LIB=`opam config var lib`/ocaml
 
 CCFLAGS=-ccopt -I$(OCAML_LIB) -ccopt -I$(COH_HOME_CPP)/include -ccopt -Wall -ccopt -Wno-permissive
 COBJS=pof_writer.o pof_reader.o pof_context.o cohml.o
-MLOBJS=pof_writer.cmo pof_reader.cmo pof_context.cmo cohml.cmo
+MLOBJS=view.cmo pof_writer.cmo pof_reader.cmo pof_context.cmo cohml.cmo
 
 OCAML_VERSION_MAJOR = `ocamlopt -version | cut -f1 -d.`
 OCAML_VERSION_MINOR = `ocamlopt -version | cut -f2 -d.`
