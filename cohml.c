@@ -1,5 +1,9 @@
 // OCaml <-> C++ <-> Coherence binding
 
+#include <iostream>
+#include <sstream>
+
+
 // OCaml includes
 extern "C" {
 #include <caml/mlvalues.h>
@@ -8,7 +12,6 @@ extern "C" {
 #include <caml/custom.h>
 #include <caml/callback.h>
 #include <caml/fail.h>
-#include <caml/compatibility.h>
 } //extern C
 
 // basic includes
@@ -27,9 +30,6 @@ extern "C" {
 #include "coherence/util/Filter.hpp"
 #include "coherence/util/filter/LessEqualsFilter.hpp"
 #include "coherence/util/Iterator.hpp"
-
-#include <iostream>
-#include <sstream>
 
 // NOTE: if DEBUG is required, it must be #defined *before* cohml.h is #included
 //#define DEBUG
