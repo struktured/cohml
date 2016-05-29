@@ -52,8 +52,8 @@ class Message {
   std::string msg_body;
  public:
   Message(int i, int p, const std::string& s, const std::string& b); 
-  Message(const Message& that); 
-  Message(); 
+  Message(const Message& that);
+  Message();
 
   int getId() const;
   int getPriority() const;
