@@ -1,7 +1,7 @@
 module type S =
 sig
   include Coh_object.S
-  module Value : Coh_object.S
+  module Object : Coh_object.S
   val has_next : t -> bool
-  val next : t -> Value.Holder.t
+  val next : t -> Object.Holder.t
 end

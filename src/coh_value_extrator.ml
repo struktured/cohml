@@ -1,6 +1,5 @@
 module type S =
 sig
-include Coh_map.S
-
+  include Coh_object.S
 end
 
