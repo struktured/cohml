@@ -7,7 +7,8 @@ end
 module type SYSTEM =
 sig
   include S
-  val register : t -> user_type:int -> View.t -> t
+  module Coh_class : Coh_class.S
+  val register : t -> user_type:int -> Coh_class.View.t -> t
 end
 
 
