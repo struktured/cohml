@@ -18,8 +18,10 @@ val add_index :
 val remove_index : t -> Value_extractor.t -> t
 end
 
-module Make_derived(Map:Coh_map.S) : S =
+module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.S) : S with module Key = Key and module Value = Value 
+and type t = I.t =
 struct
+  module Map = Coh_map.Make_derived(Key)(Value)(I)
   include Map
   module Keys = Coh_set.Pof(Map.Key)
   module Entries = struct
@@ -40,4 +42,8 @@ struct
   let remove_index t value_extractor = failwith("nyi")
 end
 
-
+module Make(Key:Pofable.S) (Value:Pofable.S) :
+  S with module Key = Key and module Value = Value =
+  struct
+    include Make_derived(Key)(Value)(Coh_object.Opaque)
+  end

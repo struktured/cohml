@@ -24,6 +24,7 @@ end
 
 module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.T) :
 S with module Key = Key and module Value = Value and
+type Key.t = Key.t and type Value.t = Value.t and 
 type t = I.t =
 struct
   module Key = Key
