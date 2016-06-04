@@ -4,3 +4,5 @@ sig
   (* TODO *)
 end
 
+module I = struct include Coh_object.Opaque end
+

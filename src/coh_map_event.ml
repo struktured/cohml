@@ -1,5 +1,5 @@
 open Coh_primitives
-module type S =
+module Make_sig =
 sig
   include Coh_object.S
   module Key : Pofable.S
