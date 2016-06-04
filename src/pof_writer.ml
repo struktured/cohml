@@ -1,7 +1,7 @@
 open Coh_primitives
 module type S =
 sig
-  type t
+  include Coh_object.S
   val write_boolean : t -> index:int32 -> bool -> t
   val write_octet : t -> index:int32 -> octet -> t
   val write_char16 : t -> index:int32 -> char16 -> t
@@ -39,15 +39,16 @@ sig
   module Maps : functor(Map : Coh_map.S) ->
   sig
     (* TODO Can class be infered through object functor ? *)
-    val write_map : ?key_class:Coh_class.View.t -> ?value_class:Coh_class.View.t ->
-      t -> index:int32 -> Map.t -> t
+    val write_map : ?key_class:Coh_class.View.t ->
+      ?value_class:Coh_class.View.t -> t -> index:int32 -> Map.t -> t
   end
-  val get_pof_context : t -> Pof_context.t -> t
+  val get_pof_context : t -> Pof_context.View.t
+  val set_pof_context : t -> Pof_context.View.t -> t
   val get_user_type_id : t -> int32
   val get_version_id : t -> int32
   val set_version_id : t -> int32 -> t
+  val create_nested : t -> index:int32 -> Handle.t
   val write_remainder : t -> Coh_binary.View.t -> t
-
 end
 
 module External =
