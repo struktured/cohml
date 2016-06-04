@@ -27,7 +27,7 @@ module Make(Object : Coh_object.S) : S with module Object = Object =
 struct
   include Make_derived(Object)(Coh_object.Opaque)
 end
-
+(*
 module Pof_derived(Object:Pofable.S)(I:Coh_object.S) :
 S with module Object = Object =
 struct
@@ -48,4 +48,7 @@ module Pof(Object:Pofable.S) : S with module Object = Object =
 struct
     include Pof_derived(Object)(Coh_object.Opaque)
 end
+*)
+include Make(Coh_object.Opaque)
+
 

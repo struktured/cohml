@@ -10,8 +10,9 @@ CCFLAGS=-ccopt -I$(OCAML_LIB) -ccopt -I$(COH_HOME_CPP)/include -ccopt -Wall -cco
 COBJS=pof_writer.o pof_reader.o pof_serializer.o pof_context.o coh_map.o cohml.o
 
 MLOBJS=coh_primitives.cmo coh_object.cmo coh_class.cmo coh_comparator.cmo coh_binary.cmo \
+       coh_iterator.cmo coh_collection.cmo \
        pof_writer.cmo pof_reader.cmo pofable.cmo pof_serializer.cmo pof_context.cmo \
-       coh_iterator.cmo coh_collection.cmo coh_set.cmo coh_map.cmo coh_list.cmo \
+       coh_set.cmo coh_map.cmo coh_list.cmo \
        coh_filter.cmo coh_value_extractor.cmo coh_query_map.cmo coh_observable_map.cmo \
        coh_invocable_map.cmo coh_named_cache.cmo cohml.cmo
 

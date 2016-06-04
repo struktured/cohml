@@ -23,13 +23,12 @@ sig
   (* TODO write date / time *)
   val write_object : t -> index:int32 -> Coh_object.View.t -> t
   val write_object_array : t -> index:int32 -> Coh_object.View.t array -> t
-
-
+  val write_long_array : t -> index:int32 -> long array -> t
+  val write_collection : t -> ?element_class:Coh_class.View.t -> Coh_collection.View.t -> t
   val get_user_type_id : t -> int32
   val get_version_id : t -> int32
 
   val set_version_id : t -> int32 -> t
-
   val write_remainder : t -> Coh_binary.View.t -> t
 end
 

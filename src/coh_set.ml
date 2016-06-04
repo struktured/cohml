@@ -13,6 +13,7 @@ struct
   include Coh_collection.Make_derived(Object)(Coh_object.Opaque)
 end
 
+(*
 module Pof_derived(Object:Pofable.S)(I:Coh_object.S) :
 S with module Object = Object =
 struct
@@ -23,3 +24,6 @@ module Pof(Object:Pofable.S) : S with module Object = Object =
 struct
     include (Pof_derived(Object)(Coh_object.Opaque) : S with module Object = Object)
 end
+*)
+
+include Make(Coh_object.Opaque)

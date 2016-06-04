@@ -14,7 +14,7 @@ struct
   let has_next t = failwith("nyi")
   let next t = failwith("nyi")
 end
-
+(*
 module Pof(Object:Pofable.S) : S with module Object = Object =
 struct
 
@@ -31,3 +31,4 @@ struct
   end
   include I
 end
+*)
