@@ -7,7 +7,7 @@ sig
   module Value : Pofable.S
   module Entry :
   sig
-    include Coh_object.S
+    include Pofable.S
     val get_key : t -> Key.View.t
     val get_value : t -> Value.Holder.t option
     val set_value : t -> Value.Holder.t -> Value.Holder.t option
@@ -35,6 +35,8 @@ struct
     let get_key t = failwith("nyi")
     let get_value t = failwith("nyi")
     let set_value t v = failwith("nyi")
+    let to_pof t b = failwith("nyi")
+    let from_pof b = failwith("nyi")
   end
     let size t = failwith("nyi")
     let is_empty t = failwith("nyi")

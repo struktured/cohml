@@ -6,3 +6,11 @@ sig
   val compare : t -> Object.View.t -> Object.View.t -> coh_int32
 end
 
+module Make(Object:Coh_object.S) : S with module Object = Object =
+struct
+  include Coh_object.Opaque
+  module Object = Object
+  let compare t t' = failwith("nyi")
+end
+
+
