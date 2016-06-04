@@ -24,6 +24,13 @@ sig
   val write_object : t -> index:int32 -> Coh_object.View.t -> t
   val write_object_array : t -> index:int32 -> Coh_object.View.t array -> t
 
+
+  val get_user_type_id : t -> int32
+  val get_version_id : t -> int32
+
+  val set_version_id : t -> int32 -> t
+
+  val write_remainder : t -> Coh_binary.View.t -> t
 end
 
 module External =

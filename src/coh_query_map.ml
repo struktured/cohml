@@ -23,9 +23,12 @@ and type t = I.t =
 struct
   module Map = Coh_map.Make_derived(Key)(Value)(I)
   include Map
-  module Keys = Coh_set.Pof(Map.Key)
+  module Keys = struct
+    include (Coh_set.Make(Map.Key) : Coh_set.S with module Object := Map.Key)
+    module Object = Map.Key
+  end
   module Entries = struct
-    include (Coh_set.Pof(Map.Entry) : Coh_set.S with module Object := Map.Entry)
+    include (Coh_set.Make(Map.Entry) : Coh_set.S with module Object := Map.Entry)
     module Object = Map.Entry
   end
   module Entry_compare = 

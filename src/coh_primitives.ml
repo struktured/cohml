@@ -6,4 +6,4 @@ type int64 = int
 type float32 = float
 type float64 = float
 type octet = int (* TODO ?? *)
-
+type long = int64

@@ -13,4 +13,7 @@ struct
   let compare t t' = failwith("nyi")
 end
 
+module I = Make(Coh_object.Opaque)
+include I
+
 
