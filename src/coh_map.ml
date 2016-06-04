@@ -3,11 +3,11 @@ open Coh_primitives
 module type S =
 sig
   include Coh_object.S
-  module Key : Pofable.S
-  module Value : Pofable.S
+  module Key : Coh_object.S
+  module Value : Coh_object.S
   module Entry :
   sig
-    include Pofable.S
+    include Coh_object.S
     val get_key : t -> Key.View.t
     val get_value : t -> Value.Holder.t option
     val set_value : t -> Value.Holder.t -> Value.Holder.t option
@@ -22,7 +22,7 @@ sig
   val put_all : t -> to_put:t -> t
 end
 
-module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.T) :
+module Make_derived(Key:Coh_object.S)(Value:Coh_object.S)(I:Coh_object.T) :
 S with module Key = Key and module Value = Value and
 type Key.t = Key.t and type Value.t = Value.t and 
 type t = I.t =
@@ -49,8 +49,9 @@ struct
     let put_all t = failwith("nyi")
 end
 
-module Make(Key:Pofable.S)(Value:Pofable.S) :
+module Make(Key:Coh_object.S)(Value:Coh_object.S) :
 S with module Key = Key and module Value = Value =
 struct
   include Make_derived(Key)(Value)(Coh_object.I)
 end
+

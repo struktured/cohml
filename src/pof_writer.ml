@@ -21,15 +21,33 @@ sig
   val write_binary : t -> index:int32 -> Coh_binary.View.t -> t
   val write_string : t -> index:int32 -> string -> t
   (* TODO write date / time *)
-  val write_object : t -> index:int32 -> Coh_object.View.t -> t
-  val write_object_array : t -> index:int32 -> Coh_object.View.t array -> t
+
+  module Objects : functor (Object:Coh_object.S) ->
+  sig
+    val write_object : t -> index:int32 -> Object.View.t -> t
+    val write_object_array : t -> index:int32 -> Object.View.t array -> t
+  end
   val write_long_array : t -> index:int32 -> long array -> t
-  val write_collection : t -> ?element_class:Coh_class.View.t -> Coh_collection.View.t -> t
+
+  module Collections : functor(Collection : Coh_collection.S) ->
+  sig
+    (* TODO Can class be infered through object functor ? *)
+    val write_collection : ?element_class:Coh_class.View.t -> t ->
+      index:int32 -> Collection.View.t -> t
+  end
+
+  module Maps : functor(Map : Coh_map.S) ->
+  sig
+    (* TODO Can class be infered through object functor ? *)
+    val write_map : ?key_class:Coh_class.View.t -> ?value_class:Coh_class.View.t ->
+      t -> index:int32 -> Map.t -> t
+  end
+  val get_pof_context : t -> Pof_context.t -> t
   val get_user_type_id : t -> int32
   val get_version_id : t -> int32
-
   val set_version_id : t -> int32 -> t
   val write_remainder : t -> Coh_binary.View.t -> t
+
 end
 
 module External =

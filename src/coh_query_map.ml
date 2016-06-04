@@ -18,23 +18,25 @@ val add_index :
 val remove_index : t -> Value_extractor.t -> t
 end
 
-module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.S) : S with module Key = Key and module Value = Value 
+module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.S) : S with module Key = Key and module Value = Value
 and type t = I.t =
 struct
   module Map = Coh_map.Make_derived(Key)(Value)(I)
-  include Map
+  include (Map : Coh_map.S with module Key := Key and module Value := Value and type t = I.t)
+  module Key = Key
+  module Value = Value
   module Keys = struct
-    include (Coh_set.Make(Map.Key) : Coh_set.S with module Object := Map.Key)
+    include (Coh_set.Make(Key) : Coh_set.S with module Object := Key)
     module Object = Map.Key
   end
   module Entries = struct
-    include (Coh_set.Make(Map.Entry) : Coh_set.S with module Object := Map.Entry)
-    module Object = Map.Entry
+    include (Coh_set.Make(Entry) : Coh_set.S with module Object := Entry)
+    module Object = Entry
   end
-  module Entry_compare = 
+  module Entry_compare =
     struct 
-      include (Coh_comparator.Make(Map.Entry) : Coh_comparator.S with module Object := Map.Entry)
-      module Object = Map.Entry
+      include (Coh_comparator.Make(Entry) : Coh_comparator.S with module Object := Entry)
+      module Object = Entry
     end
 
   module Filter = Coh_filter.I (* TODO *)
