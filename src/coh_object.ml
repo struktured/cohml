@@ -3,6 +3,8 @@ open Coh_primitives
 module type T = sig type t end
 module I : T = struct type t end
 
+module Create =
+struct
 module View =
 struct
   module type S =
@@ -55,6 +57,8 @@ struct
 end
 end
 
+module Object =
+struct
 module type S =
 sig
   include Holder.S
@@ -67,5 +71,10 @@ struct
   module Holder = Holder.Make(I)
   include Holder
 end
+end
+end
 
+module Make = Create.Object.Make
 module Opaque = Make(I)
+include Opaque
+module type S = Create.Object.S

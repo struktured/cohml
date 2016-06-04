@@ -33,7 +33,7 @@ end
 and Map_event : sig
   include Coh_object.S
   val get_map : t -> I.Handle.t
-  val get_id : t -> coh_int32
+  val get_id : t -> int32
   val get_key : t -> I.Key.View.t
   val get_old_value : t -> I.Value.View.t option
   val get_new_value : t -> I.Value.View.t option
