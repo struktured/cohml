@@ -22,9 +22,10 @@ sig
   val put_all : t -> to_put:t -> t
 end
 
-module Make_derived(Key:Coh_object.S)(Value:Coh_object.S)(I:Coh_object.T) :
+module Derived = struct
+module Make(Key:Coh_object.S)(Value:Coh_object.S)(I:Coh_object.T) :
 S with module Key = Key and module Value = Value and
-type Key.t = Key.t and type Value.t = Value.t and 
+type Key.t = Key.t and type Value.t = Value.t and
 type t = I.t =
 struct
   module Key = Key
@@ -48,10 +49,22 @@ struct
     let remove t = failwith("nyi")
     let put_all t = failwith("nyi")
 end
+end
 
+module Object =
+struct
 module Make(Key:Coh_object.S)(Value:Coh_object.S) :
 S with module Key = Key and module Value = Value =
 struct
-  include Make_derived(Key)(Value)(Coh_object.I)
+  include Derived.Make(Key)(Value)(Coh_object.I)
 end
+module Derived =
+struct
+module Make = Derived.Make
+end
+end
+
+module Opaque = Object.Make(Coh_object.Opaque)(Coh_object.Opaque)
+module Make = Object.Make
+include Opaque
 

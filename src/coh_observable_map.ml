@@ -1,11 +1,13 @@
 open Coh_primitives
 
-module Make_derived
-  (Map: Coh_map.S) =
+module Derived =
+struct
+module Make(Key:Coh_object.S)(Value:Coh_object.S)(Parent:Coh_object.S) =
+  (*(Map: Coh_map.S) : Coh_map.S with type t = Map.t and module Key = Map.Key and module Value = Map.Value = *) 
 struct
 module rec I :
 sig
-include Coh_map.S
+include Coh_map.S with module Key = Key and module Value = Value and type t = Parent.t
 
 module Filter : Coh_filter.S
 
@@ -24,7 +26,7 @@ end
 =
 struct
   module Filter = Coh_filter.I
-  include Map
+  include Coh_map.Derived.Make(Key)(Value)(Parent)
   let add_key_listener t ?lite handle key = failwith("nyi")
   let remove_key_listener t handle = failwith("nyi")
   let add_filter_listener t ?lite ?filter handle = failwith("nyi")
@@ -47,7 +49,7 @@ end = struct
   let get_old_value t = failwith("nyi")
   let get_new_value t = failwith("nyi")
   let get_description t = failwith("nyi")
-end 
+end
 and Map_listener :
 sig
     include Coh_object.S
@@ -70,18 +72,41 @@ end = struct
   let entry_updated t = t.entry_updated
 end
 include I
+module type S = module type of I
 end
-
-module Make(Key:Pofable.S) (Value:Pofable.S)
-=
+end
+module Object =
+struct
+module Make(Key:Coh_object.S) (Value:Coh_object.S) =
 struct
   module Coh_map = struct include Coh_map.Make(Key)(Value) end
-  include Make_derived(Coh_map)
+  include Derived.Make(Key)(Value)(Coh_map)
 end
 
-module Make_from_object(Key:Pofable.S) (Value:Pofable.S)(Obj:Coh_object.S)
+module Derived = struct
+module Make(Key:Coh_object.S) (Value:Coh_object.S)(Obj:Coh_object.S)
 = struct
-  module Coh_map = struct include Coh_map.Make_derived(Key)(Value)(Obj) end
-  include Make_derived(Coh_map)
+  include Derived.Make(Key)(Value)(Obj)
+end
+end
+end
+module Opaque = Object.Make(Coh_object.Opaque)(Coh_object.Opaque)
+
+module Pof =
+struct
+module Make(Key:Pofable.S) (Value:Pofable.S)  (* : S with module Key = Key and module Value = Value *) =
+struct
+  module Coh_map = struct include Coh_map.Make(Key)(Value) end
+  module D = Derived.Make(Key)(Value)(Coh_map)
+  include (D : module type of D with module Key := Key)
+  module Key = Key
 end
 
+module Derived = struct
+module Make(Key:Pofable.S)(Value:Pofable.S)(Obj:Coh_object.S)
+= struct
+  module Coh_map = struct include Coh_map.Derived.Make(Key)(Value)(Obj) end
+  include Derived.Make(Key)(Value)(Coh_map)
+end
+end
+end

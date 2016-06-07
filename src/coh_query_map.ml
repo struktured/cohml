@@ -21,7 +21,7 @@ end
 module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.S) : S with module Key = Key and module Value = Value
 and type t = I.t =
 struct
-  module Map = Coh_map.Make_derived(Key)(Value)(I)
+  module Map = Coh_map.Derived.Make(Key)(Value)(I)
   include (Map : Coh_map.S with module Key := Key and module Value := Value and type t = I.t)
   module Key = Key
   module Value = Value

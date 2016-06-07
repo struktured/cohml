@@ -1,5 +1,5 @@
 ifndef COH_HOME_CPP
-COH_HOME_CPP=/opt/coherence-cpp
+  COH_HOME_CPP=/opt/coherence-cpp
 endif
 
 ifndef OCAML_LIB
