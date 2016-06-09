@@ -5,13 +5,16 @@ sig
   include Coh_object.S
   module Key : Coh_object.S
   module Value : Coh_object.S
-  module Entry :
+module Entry :
   sig
+    module Key : Coh_object.S
+    module Value : Coh_object.S
     include Coh_object.S
     val get_key : t -> Key.View.t
     val get_value : t -> Value.Holder.t option
     val set_value : t -> Value.Holder.t -> Value.Holder.t option
   end
+  (*module Entry : Entry.S with module Key = Key and module Value = Value*)
   val size : t -> size32
   val is_empty : t -> bool
   val contains_key : t -> Key.View.t -> bool
@@ -24,15 +27,15 @@ end
 
 module Derived = struct
 module Make(Key:Coh_object.S)(Value:Coh_object.S)(I:Coh_object.T) :
-S with module Key = Key and module Value = Value and
-type Key.t = Key.t and type Value.t = Value.t and
-type t = I.t =
+S with module Key = Key and module Value = Value and type t = I.t =
 struct
   module Key = Key
   module Value = Value
   include Coh_object.Make(I)
   module Entry =
   struct
+    module Key = Key
+    module Value = Value
     include Coh_object.Make(I)
     let get_key t = failwith("nyi")
     let get_value t = failwith("nyi")
@@ -48,23 +51,21 @@ struct
     let put t = failwith("nyi")
     let remove t = failwith("nyi")
     let put_all t = failwith("nyi")
-end
-end
+end (* Derived.Make *)
+end (* Derived *)
+module Make(Key:Coh_object.S)(Value:Coh_object.S) = Derived.Make(Key)(Value)(Coh_object.Opaque)
+(*
+module Pof = struct
+module type S =
+  sig
+    module Key : Pofable.S
+    module Value : Pofable.S
+    module Entry : Entry.Pof.S with module Key = Key and module Value = Value
+    include Object.S with module Key := Key and module Value := Value and module Entry := Entry
+  end (* Pof.S *)
 
-module Object =
-struct
-module Make(Key:Coh_object.S)(Value:Coh_object.S) :
-S with module Key = Key and module Value = Value =
-struct
-  include Derived.Make(Key)(Value)(Coh_object.I)
-end
-module Derived =
-struct
-module Make = Derived.Make
-end
-end
+end (* Pof *)
+*)
 
-module Opaque = Object.Make(Coh_object.Opaque)(Coh_object.Opaque)
-module Make = Object.Make
+module Opaque = Make(Coh_object.Opaque)(Coh_object.Opaque)
 include Opaque
-

@@ -2,7 +2,7 @@ open Coh_primitives
 
 module Derived =
 struct
-module Make(Key:Coh_object.S)(Value:Coh_object.S)(Parent:Coh_object.S) =
+module Make(Key:Coh_object.S)(Value:Coh_object.S)(Parent:Coh_object.T) =
   (*(Map: Coh_map.S) : Coh_map.S with type t = Map.t and module Key = Map.Key and module Value = Map.Value = *) 
 struct
 module rec I :
@@ -75,37 +75,47 @@ include I
 module type S = module type of I
 end
 end
+
+
 module Object =
 struct
 module Make(Key:Coh_object.S) (Value:Coh_object.S) =
 struct
-  module Coh_map = struct include Coh_map.Make(Key)(Value) end
+  module Parent = struct include Coh_map.Make(Key)(Value) end
   include Derived.Make(Key)(Value)(Coh_map)
 end
 
 module Derived = struct
-module Make(Key:Coh_object.S) (Value:Coh_object.S)(Obj:Coh_object.S)
+module Make(Key:Coh_object.S) (Value:Coh_object.S)(Parent:Coh_object.T)
 = struct
-  include Derived.Make(Key)(Value)(Obj)
+  include Derived.Make(Key)(Value)(Parent)
 end
 end
 end
 module Opaque = Object.Make(Coh_object.Opaque)(Coh_object.Opaque)
 
+module type S = Opaque.S
 module Pof =
 struct
-module Make(Key:Pofable.S) (Value:Pofable.S)  (* : S with module Key = Key and module Value = Value *) =
+module type S =
+sig
+  module Key : Pofable.S
+  module Value : Pofable.S
+end
+
+module Make(Key:Pofable.S) (Value:Pofable.S)  : S with module Key = Key and module Value = Value  =
 struct
-  module Coh_map = struct include Coh_map.Make(Key)(Value) end
+  module Parent = struct include Coh_map.Make(Key)(Value) end
   module D = Derived.Make(Key)(Value)(Coh_map)
-  include (D : module type of D with module Key := Key)
+  include (D : module type of D with module Key := Key and module Value := Value)
   module Key = Key
+  module Value = Value
 end
 
 module Derived = struct
-module Make(Key:Pofable.S)(Value:Pofable.S)(Obj:Coh_object.S)
+module Make(Key:Pofable.S)(Value:Pofable.S)(Parent:Coh_object.T)
 = struct
-  module Coh_map = struct include Coh_map.Derived.Make(Key)(Value)(Obj) end
+  module Parent = struct include Coh_map.Derived.Make(Key)(Value)(Parent) end
   include Derived.Make(Key)(Value)(Coh_map)
 end
 end
