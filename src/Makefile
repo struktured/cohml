@@ -15,6 +15,8 @@ MLOBJS=coh_primitives.cmo coh_object.cmo coh_class.cmo coh_comparator.cmo coh_bi
        coh_filter.cmo coh_value_extractor.cmo coh_pofable_map.cmo coh_query_map.cmo \
        coh_observable_map.cmo coh_invocable_map.cmo coh_named_cache.cmo cohml.cmo
 
+MLPACKAGES = ctypes,ctypes.foreign
+
 OCAML_VERSION_MAJOR = `ocamlopt -version | cut -f1 -d.`
 OCAML_VERSION_MINOR = `ocamlopt -version | cut -f2 -d.`
 OCAML_VERSION_POINT = `ocamlopt -version | cut -f3 -d.`
@@ -23,14 +25,14 @@ OCAML_VERSION_POINT = `ocamlopt -version | cut -f3 -d.`
 all:	cohml
 
 cohml:	$(COBJS) $(MLOBJS)
-	ocamlmklib -custom -g -o $@ unix.cma $(MLOBJS) $(COBJS) -cclib -L$(COH_HOME_CPP)/lib -cclib -lstdc++ -cclib -lcoherence
+	ocamlfind ocamlmklib -custom -g -o $@ unix.cma $(MLOBJS) -package $(MLPACKAGES) $(COBJS) -cclib -L$(COH_HOME_CPP)/lib -cclib -lstdc++ -cclib -lcoherence
 	mkdir -p log
 
 %.o:	%.c
-	ocamlc -verbose -custom -ccopt -xc++ -ccopt -g3 -c -o $@ -ccopt -fpermissive -ccopt -I$(COH_HOME_CPP)/include $< -cclib -L$(COH_HOME_CPP)/lib -cclib -lstdc++ -cclib -lcoherence -ccopt -DOCAML_VERSION_MINOR=$(OCAML_VERSION_MINOR)
+	ocamlfind ocamlc -verbose -custom -ccopt -xc++ -ccopt -g3 -c -o $@ -ccopt -fpermissive -ccopt -I$(COH_HOME_CPP)/include $< -cclib -L$(COH_HOME_CPP)/lib -cclib -lstdc++ -cclib -lcoherence -ccopt -DOCAML_VERSION_MINOR=$(OCAML_VERSION_MINOR)
 
 %.cmo: %.ml
-	ocamlc -verbose -custom -c -g -annot unix.cma %.o $<
+	ocamlfind ocamlc -package $(MLPACKAGES) -verbose -custom -c -g -annot unix.cma %.o $<
 
 clean:
 	rm -f *.o *.cm* *.so *.a cohmlsh cohml *~
