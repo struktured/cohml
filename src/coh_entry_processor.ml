@@ -1,3 +1,5 @@
+open Ctypes
+open Foreign
 module type S =
 sig
   module Result : Coh_object.S
@@ -13,11 +15,22 @@ sig
 
 end
 
-module Make(Key:Coh_object.S)(Value:Coh_object.S)(Result:Coh_object.S) =
+module Make(Key:Coh_object.S)(Value:Coh_object.S)(Result:Coh_object.S) :
+  S with module Entry.Key = Key and module Entry.Value = Value and module Result
+  = Result = 
 struct
   module Result = Result
-  module Map = Coh_map.Make(Key)(Value)
+  module Entry = Coh_entry.Make(Key)(Value)
+  module Map = Coh_map.Make(Entry.Key)(Result)
   module Entries = Coh_set.Make(Map.Entry)
   module T = struct type t let name = "entry_processor" end
   include Coh_object.Make(T)
+  let process = Self.foreign "process" (Entry.Handle.t @-> returning
+                                          Result.Holder.t)
+  module All = 
+  struct
+    let process = Self.foreign "process_all" (Entries.View.t @-> returning
+                                                Map.View.t)
+  end
+
 end
