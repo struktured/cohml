@@ -60,6 +60,7 @@ sig
     val entry_deleted : t -> entry_fun
 end = struct
   type entry_fun = Map_event.View.t -> unit
+  let entry_fun = Map_event.View.t @-> returning void
   let no_op : entry_fun = fun _ -> ()
   module T = struct
    let name = "map_listener"
@@ -69,22 +70,17 @@ end = struct
   include Coh_object.Make(T)
   module Foreign = struct
     let create = Self.foreign "create" @@
-      Map_event.View.t @-> void @->
-      Map_event.View.t @-> void @->
-      Map_event.View.t @-> void @->
+      funptr entry_fun @->
+      funptr entry_fun @->
+      funptr entry_fun @->
       returning t
   end
 
   let create ?(entry_inserted=no_op) ?(entry_updated=no_op) ?(entry_deleted=no_op) () =
-    let entry_inserted' v =
-      entry_inserted v; void in
-    let entry_updated' v =
-      entry_updated v; void in
-    let entry_deleted' v =
-      entry_deleted v; void in
-    Foreign.create entry_inserted entry_updated' entry_deleted'
-  let entry_inserted = failwith("nyi")
-    (* (t @-> returning (Map_event.View.t @-> returning void))- *)
+    Foreign.create entry_inserted entry_updated entry_deleted
+  let entry_inserted = Self.foreign "entry_inserted" (t @-> returning (funptr entry_fun))
+  let entry_updated = Self.foreign "entry_updated" (t @-> returning (funptr entry_fun))
+  let entry_deleted = Self.foreign "entry_deleted" (t @-> returning (funptr entry_fun))
 end
 include I
 module type S = module type of I
