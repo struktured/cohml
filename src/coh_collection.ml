@@ -1,4 +1,7 @@
 open Coh_primitives
+open Ctypes
+open Foreign
+
 module type S =
 sig
 include Coh_object.S
@@ -11,16 +14,16 @@ val contains_all : t -> View.t -> bool
 val iterator : t -> Iterator.Handle.t
 end
 
-module Make_derived(Object : Coh_object.S)(I:Coh_object.S) : S with module Object = Object =
+module Make_derived(Object : Coh_object.S)(T:Coh_object.S) : S with module Object = Object =
 struct
-  include I
+  include T
   module Object = Object
   module Iterator = Coh_iterator.Make(Object)
-  let size t = failwith("nyi")
-  let is_empty t = failwith("nyi")
-  let contains t = failwith("nyi")
-  let contains_all t = failwith("nyi")
-  let iterator t = failwith("nyi")
+  let size = Self.foreign "size" (t @-> returning int)
+  let is_empty = Self.foreign "is_empty" (t @-> returning bool)
+  let contains = Self.foreign "contains" (t @-> Object.View.t @-> returning bool)
+  let contains_all = Self.foreign "contains_all" (t @-> View.t @-> returning bool)
+  let iterator = Self.foreign "iterator" (t @-> returning Iterator.Handle.t)
 end
 
 module Make(Object : Coh_object.S) : S with module Object = Object =
