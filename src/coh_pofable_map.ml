@@ -7,17 +7,16 @@ sig
   include Coh_map.S with module Key := Key and module Value := Value
 end
 
-module Make(Key:Pofable.S)(Value:Pofable.S) 
+module Make(Key:Pofable.S)(Value:Pofable.S)
   : S with module Key = Key and module Value = Value =
 struct
-module type S =
-sig
-  include S with module Key = Key and module Value = Value
-end
+  module type S =
+  sig
+    include S with module Key = Key and module Value = Value
+  end
 
-module Parent = Coh_map.Make(Key)(Value)
-module Key = Key
-module Value = Value
-include (Parent : S with module Key := Key and module Value := Value)
+  module Parent = Coh_map.Make(Key)(Value)
+  module Key = Key
+  module Value = Value
+  include (Parent : S with module Key := Key and module Value := Value)
 end
-

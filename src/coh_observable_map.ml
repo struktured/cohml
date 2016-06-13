@@ -1,13 +1,14 @@
 open Coh_primitives
-
+open Ctypes
+open Foreign
 module Derived =
 struct
-module Make(Key:Coh_object.S)(Value:Coh_object.S)(Parent:Coh_object.T) =
+module Make(Key:Coh_object.S)(Value:Coh_object.S)(T:Coh_object.T) =
   (*(Map: Coh_map.S) : Coh_map.S with type t = Map.t and module Key = Map.Key and module Value = Map.Value = *) 
 struct
 module rec I :
 sig
-include Coh_map.S with module Key = Key and module Value = Value and type t = Parent.t
+include Coh_map.S with module Key = Key and module Value = Value and module Self.T = T
 
 module Filter : Coh_filter.S
 
@@ -26,7 +27,7 @@ end
 =
 struct
   module Filter = Coh_filter.I
-  include Coh_map.Derived.Make(Key)(Value)(Parent)
+  include Coh_map.Derived.Make(Key)(Value)(T)
   let add_key_listener t ?lite handle key = failwith("nyi")
   let remove_key_listener t handle = failwith("nyi")
   let add_filter_listener t ?lite ?filter handle = failwith("nyi")
@@ -60,16 +61,30 @@ sig
 end = struct
   type entry_fun = Map_event.View.t -> unit
   let no_op : entry_fun = fun _ -> ()
-  module I = struct
-   type t = {entry_inserted : entry_fun;entry_updated:entry_fun;entry_deleted:entry_fun}
+  module T = struct
+   let name = "map_listener"
+   type t 
   end
-  open I
-  include Coh_object.Make(I)
+  open T
+  include Coh_object.Make(T)
+  module Foreign = struct
+    let create = Self.foreign "create" @@
+      Map_event.View.t @-> void @->
+      Map_event.View.t @-> void @->
+      Map_event.View.t @-> void @->
+      returning t
+  end
+
   let create ?(entry_inserted=no_op) ?(entry_updated=no_op) ?(entry_deleted=no_op) () =
-    {entry_deleted;entry_inserted;entry_updated}
-  let entry_inserted t = t.entry_inserted
-  let entry_deleted t = t.entry_deleted
-  let entry_updated t = t.entry_updated
+    let entry_inserted' v =
+      entry_inserted v; void in
+    let entry_updated' v =
+      entry_updated v; void in
+    let entry_deleted' v =
+      entry_deleted v; void in
+    Foreign.create entry_inserted entry_updated' entry_deleted'
+  let entry_inserted = failwith("nyi")
+    (* (t @-> returning (Map_event.View.t @-> returning void))- *)
 end
 include I
 module type S = module type of I

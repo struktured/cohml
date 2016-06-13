@@ -7,8 +7,8 @@ sig
   module Value : Coh_object.S
 module Entry :
   sig
-    module Key : Coh_object.S
-    module Value : Coh_object.S
+    module Key : module type of Key
+    module Value : module type of Value
     include Coh_object.S
     val get_key : t -> Key.View.t
     val get_value : t -> Value.Holder.t option
@@ -26,17 +26,17 @@ module Entry :
 end
 
 module Derived = struct
-module Make(Key:Coh_object.S)(Value:Coh_object.S)(I:Coh_object.T) :
-S with module Key = Key and module Value = Value and type t = I.t =
+module Make(Key:Coh_object.S)(Value:Coh_object.S)(T:Coh_object.T) :
+S with module Key = Key and module Value = Value and module Self.T = T =
 struct
   module Key = Key
   module Value = Value
-  include Coh_object.Make(I)
+  include Coh_object.Make(T)
   module Entry =
   struct
     module Key = Key
     module Value = Value
-    include Coh_object.Make(I)
+    include Coh_object.Make(T)
     let get_key t = failwith("nyi")
     let get_value t = failwith("nyi")
     let set_value t v = failwith("nyi")
@@ -53,7 +53,8 @@ struct
     let put_all t = failwith("nyi")
 end (* Derived.Make *)
 end (* Derived *)
-module Make(Key:Coh_object.S)(Value:Coh_object.S) = Derived.Make(Key)(Value)(Coh_object.Opaque)
+module Make(Key:Coh_object.S)(Value:Coh_object.S) =
+  Derived.Make(Key)(Value)(Coh_object.Opaque)
 (*
 module Pof = struct
 module type S =

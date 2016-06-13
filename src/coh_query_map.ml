@@ -18,11 +18,13 @@ val add_index :
 val remove_index : t -> Value_extractor.t -> t
 end
 
-module Make_derived(Key:Pofable.S)(Value:Pofable.S)(I:Coh_object.S) : S with module Key = Key and module Value = Value
-and type t = I.t =
+module Make_derived(Key:Pofable.S)(Value:Pofable.S)(T:Coh_object.T) : S with
+  module Key = Key and
+  module Value = Value and
+  module Self.T = T =
 struct
-  module Map = Coh_map.Derived.Make(Key)(Value)(I)
-  include (Map : Coh_map.S with module Key := Key and module Value := Value and type t = I.t)
+  module Map = Coh_map.Derived.Make(Key)(Value)(T)
+  include (Map : Coh_map.S with module Key := Key and module Value := Value and module Self.T = T)
   module Key = Key
   module Value = Value
   module Keys = struct
