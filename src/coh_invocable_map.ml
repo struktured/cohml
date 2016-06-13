@@ -4,13 +4,13 @@ sig
   module Value  : Coh_object.S
   module Entry :
   sig
-    include module type of Coh_map.Entry
+    include Coh_entry.S
       with module Key = Key and module Value = Value
   end
   include Coh_map.S with
-    module Key = Key and
-    module Value = Value and
-    module Entry = Entry
+    module Key := Key and
+    module Value := Value and
+    module Entry := Entry
 
 module Keys : module type of Coh_collection.Make(Coh_map.Key)
 module Invoke : functor (Result:Coh_object.S) ->

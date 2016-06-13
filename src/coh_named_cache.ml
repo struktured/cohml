@@ -1,10 +1,10 @@
 module type S =
 sig
-  module Parent : Coh_object.T
+  module T : Coh_object.T
   module Key : Coh_object.S
   module Value : Coh_object.S
-  include module type of Coh_observable_map.Object.Derived.Make(Key)(Value)(Parent)
-    with module Key := Key and module Value := Value and type t := Parent.t
+  include module type of Coh_observable_map.Object.Derived.Make(Key)(Value)(T)
+    with module Key := Key and module Value := Value and module Self.T = T
 end
 
 module Pof =
