@@ -14,9 +14,11 @@ val contains_all : t -> View.t -> bool
 val iterator : t -> Iterator.Handle.t
 end
 
-module Make_derived(Object : Coh_object.S)(T:Coh_object.S) : S with module Object = Object =
+module Derived =
 struct
-  include T
+module Make(Object : Coh_object.S)(T:Coh_object.T) : S with module Object = Object =
+struct
+  include Coh_object.Make(T)
   module Object = Object
   module Iterator = Coh_iterator.Make(Object)
   let size = Self.foreign "size" (t @-> returning int)
@@ -25,10 +27,11 @@ struct
   let contains_all = Self.foreign "contains_all" (t @-> View.t @-> returning bool)
   let iterator = Self.foreign "iterator" (t @-> returning Iterator.Handle.t)
 end
+end
 
 module Make(Object : Coh_object.S) : S with module Object = Object =
 struct
-  include Make_derived(Object)(Coh_object.Opaque)
+  include Derived.Make(Object)(struct type t let name = "collection" end)
 end
 include Make(Coh_object.Opaque)
 

@@ -1,3 +1,6 @@
+open Ctypes
+open Foreign
+
 module type S =
 sig
   include Coh_object.S
@@ -9,26 +12,9 @@ end
 module Make(Object : Coh_object.S) :
   S with module Object = Object =
 struct
-  include Coh_object.Opaque
+  include Coh_object.Make(struct type t let name = "iterator" end)
   module Object = Object
-  let has_next t = failwith("nyi")
-  let next t = failwith("nyi")
+  let has_next = Self.foreign "has_next" (t @-> returning bool)
+  let next = Self.foreign "next" (t @-> returning Object.Holder.t)
 end
-(*
-module Pof(Object:Pofable.S) : S with module Object = Object =
-struct
 
-  module type S =
-  sig
-    include S with module Object = Object
-  end
-
-  module I : S =
-  struct
-    module Iterator = Make(Object)
-    include (Iterator : S with module Object := Object)
-    module Object = Object
-  end
-  include I
-end
-*)

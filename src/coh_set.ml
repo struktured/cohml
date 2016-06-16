@@ -3,14 +3,18 @@ sig
   include Coh_collection.S
 end
 
-module Make_derived(Object : Coh_object.S)(I:Coh_object.S) : S with module Object = Object =
+module Derived =
 struct
-  include Coh_collection.Make_derived(Object)(I)
+module Make(Object : Coh_object.S)(T:Coh_object.T) :
+  S with module Object = Object =
+struct
+  include Coh_collection.Derived.Make(Object)(T)
+end
 end
 
 module Make(Object : Coh_object.S) : S with module Object = Object =
 struct
-  include Coh_collection.Make_derived(Object)(Coh_object.Opaque)
+  include Coh_collection.Derived.Make(Object)(Coh_object.Opaque)
 end
 
 include Make(Coh_object.Opaque)
