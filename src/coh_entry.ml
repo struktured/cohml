@@ -16,7 +16,7 @@ module Make(Key:Coh_object.S)(Value:Coh_object.S) :
 struct
   module Key = Key
   module Value = Value
-  include Coh_object.Make(struct type t let name = "entry" end)
+  include Coh_object.Make(struct type t let name = "Entry" end)
   let get_key = Self.foreign "get_key" (t @-> returning Key.View.t)
   let get_value = Self.foreign "get_value"
     (t @-> returning @@ ptr_opt Value.Holder.Self.t)

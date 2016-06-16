@@ -34,6 +34,7 @@ sig
   module Self : Self.S
   type t = Self.T.t structure ptr
   val t : t typ
+  val t_opt : t option typ
   val name: string
 end
 module Make(T:T) :
@@ -43,6 +44,7 @@ struct
   module Self = Self.Make(T)
   type t = T.t structure ptr
   let t = ptr Self.t
+  let t_opt = ptr_opt Self.t
   let name = T.name
 end
 end

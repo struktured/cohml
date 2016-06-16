@@ -31,7 +31,7 @@ end
 
 module Make(Object : Coh_object.S) : S with module Object = Object =
 struct
-  include Derived.Make(Object)(struct type t let name = "collection" end)
+  include Derived.Make(Object)(struct type t let name = "Collection" end)
 end
 include Make(Coh_object.Opaque)
 

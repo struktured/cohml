@@ -31,7 +31,7 @@ struct
     include (Set : Coh_set.S with module Object := Entry)
     module Object = Entry
   end
-  module T = struct type t let name = "entry_processor" end
+  module T = struct type t let name = "EntryProcessor" end
   include Coh_object.Make(T)
   let process = Self.foreign "process" (Entry.Handle.t @-> returning
                                           Result.Holder.t)
