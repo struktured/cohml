@@ -43,13 +43,13 @@ and Map_event : sig
   (* TODO toStream and dispatch *)
   val get_description : t -> string
 end = struct
-  include Coh_object.Opaque
-  let get_map t = failwith("nyi")
-  let get_id t = failwith("nyi")
-  let get_key t = failwith("nyi")
-  let get_old_value t = failwith("nyi")
-  let get_new_value t = failwith("nyi")
-  let get_description t = failwith("nyi")
+  include Coh_object.Make(struct type t let name = "MapEvent" end)
+  let get_map = Self.foreign "get_map" (t @-> returning I.Handle.t)
+  let get_id = Self.foreign "get_id" (t @-> returning int)
+  let get_key = Self.foreign "get_key" (t @-> returning I.Key.View.t)
+  let get_old_value = Self.foreign "get_old_value" (t @-> returning I.Value.View.t_opt)
+  let get_new_value = Self.foreign "get_new_value" (t @-> returning I.Value.View.t_opt)
+  let get_description = Self.foreign "get_description" (t @-> returning string)
 end
 and Map_listener :
 sig
