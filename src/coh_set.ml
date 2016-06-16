@@ -14,7 +14,7 @@ end
 
 module Make(Object : Coh_object.S) : S with module Object = Object =
 struct
-  include Coh_collection.Derived.Make(Object)(Coh_object.Opaque)
+  include Coh_collection.Derived.Make(Object)(struct type t let name = "Set" end)
 end
 
 include Make(Coh_object.Opaque)
