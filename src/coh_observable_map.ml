@@ -1,6 +1,4 @@
 open Coh_primitives
-open Ctypes
-open Foreign
 module Derived =
 struct
 module Make(Key:Coh_object.S)(Value:Coh_object.S)(T:Coh_object.T) =
@@ -28,7 +26,15 @@ end
 struct
   module Filter = Coh_filter.I
   include Coh_map.Derived.Make(Key)(Value)(T)
-  let add_key_listener t ?lite handle key = failwith("nyi")
+
+module Foreign
+= struct
+  let add_key_listener = let open Ctypes in Self.foreign "add_key_listener"
+      (t @-> bool @-> Map_listener.Handle.t @-> Key.View.t @->
+        returning t)
+end
+  let add_key_listener (o:t) ?(lite=false) (handle:Map_listener.Handle.t) (key:Key.View.t) =
+    Foreign.add_key_listener o lite handle key
   let remove_key_listener t handle = failwith("nyi")
   let add_filter_listener t ?lite ?filter handle = failwith("nyi")
   let remove_filter_listener t ?filter handle = failwith("nyi")
@@ -43,6 +49,8 @@ and Map_event : sig
   (* TODO toStream and dispatch *)
   val get_description : t -> string
 end = struct
+  open Ctypes
+  open Foreign
   include Coh_object.Make(struct type t let name = "MapEvent" end)
   let get_map = Self.foreign "get_map" (t @-> returning I.Handle.t)
   let get_id = Self.foreign "get_id" (t @-> returning int)
@@ -59,6 +67,8 @@ sig
     val entry_updated : t -> entry_fun
     val entry_deleted : t -> entry_fun
 end = struct
+  open Ctypes
+  open Foreign
   type entry_fun = Map_event.View.t -> unit
   let entry_fun = Map_event.View.t @-> returning void
   let no_op : entry_fun = fun _ -> ()
@@ -124,9 +134,9 @@ struct
 end
 
 module Derived = struct
-module Make(Key:Pofable.S)(Value:Pofable.S)(Parent:Coh_object.T)
+module Make(Key:Pofable.S)(Value:Pofable.S)(T:Coh_object.T)
 = struct
-  module Parent = struct include Coh_map.Derived.Make(Key)(Value)(Parent) end
+  module Parent = struct include Coh_map.Derived.Make(Key)(Value)(T) end
   include Derived.Make(Key)(Value)(Coh_map)
 end
 end
