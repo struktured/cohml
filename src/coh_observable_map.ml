@@ -1,20 +1,23 @@
 open Coh_primitives
-module Derived =
-struct
-module Make(Key:Coh_object.S)(Value:Coh_object.S)(T:Coh_object.T) =
-  (*(Map: Coh_map.S) : Coh_map.S with type t = Map.t and module Key = Map.Key and module Value = Map.Value = *) 
-struct
-module rec I :
-sig
-include Coh_map.S with module Key = Key and module Value = Value and module Self.T = T
+open Ctypes
+open Foreign
 
+module Map = Coh_object.Make
+  (struct type t let name = "ObservableMap" end)
+module Map_listener =
+  Coh_object.Make(struct type t let name = "MapListener" end)
+module Map_event = Coh_object.Make(
+  struct type t let name = "MapEvent" end)
+
+module type S =
+sig
+include Coh_map.S with module Self = Map.Self
 module Filter : Coh_filter.S
 
 val add_key_listener : t ->
   ?lite:bool -> Map_listener.Handle.t -> Key.View.t -> t
 
-val remove_key_listener : t ->
-  Map_listener.Handle.t -> t
+val remove_key_listener : t -> Map_listener.Handle.t -> t
 
 val add_filter_listener : t ->
   ?lite:bool -> ?filter:Filter.View.t -> Map_listener.Handle.t -> t
@@ -22,100 +25,17 @@ val add_filter_listener : t ->
 val remove_filter_listener : t ->
   ?filter:Filter.View.t -> Map_listener.Handle.t -> t
 end
-=
-struct
-  module Filter = Coh_filter.I
-  include Coh_map.Derived.Make(Key)(Value)(T)
-
-module Foreign
-= struct
-  let add_key_listener = let open Ctypes in Self.foreign "add_key_listener"
-      (t @-> bool @-> Map_listener.Handle.t @-> Key.View.t @->
-        returning t)
-end
-  let add_key_listener (o:t) ?(lite=false) (handle:Map_listener.Handle.t) (key:Key.View.t) =
-    Foreign.add_key_listener o lite handle key
-  let remove_key_listener t handle = failwith("nyi")
-  let add_filter_listener t ?lite ?filter handle = failwith("nyi")
-  let remove_filter_listener t ?filter handle = failwith("nyi")
-end
-and Map_event : sig
-  include Coh_object.S
-  val get_map : t -> I.Handle.t
-  val get_id : t -> int32
-  val get_key : t -> I.Key.View.t
-  val get_old_value : t -> I.Value.View.t option
-  val get_new_value : t -> I.Value.View.t option
-  (* TODO toStream and dispatch *)
-  val get_description : t -> string
-end = struct
-  open Ctypes
-  open Foreign
-  include Coh_object.Make(struct type t let name = "MapEvent" end)
-  let get_map = Self.foreign "get_map" (t @-> returning I.Handle.t)
-  let get_id = Self.foreign "get_id" (t @-> returning int)
-  let get_key = Self.foreign "get_key" (t @-> returning I.Key.View.t)
-  let get_old_value = Self.foreign "get_old_value" (t @-> returning I.Value.View.t_opt)
-  let get_new_value = Self.foreign "get_new_value" (t @-> returning I.Value.View.t_opt)
-  let get_description = Self.foreign "get_description" (t @-> returning string)
-end
-and Map_listener :
-sig
-    include Coh_object.S
-    type entry_fun = Map_event.View.t -> unit
-    val entry_inserted : t -> entry_fun
-    val entry_updated : t -> entry_fun
-    val entry_deleted : t -> entry_fun
-end = struct
-  open Ctypes
-  open Foreign
-  type entry_fun = Map_event.View.t -> unit
-  let entry_fun = Map_event.View.t @-> returning void
-  let no_op : entry_fun = fun _ -> ()
-  module T = struct
-   let name = "map_listener"
-   type t 
-  end
-  open T
-  include Coh_object.Make(T)
-  module Foreign = struct
-    let create = Self.foreign "create" @@
-      funptr entry_fun @->
-      funptr entry_fun @->
-      funptr entry_fun @->
-      returning t
-  end
-
-  let create ?(entry_inserted=no_op) ?(entry_updated=no_op) ?(entry_deleted=no_op) () =
-    Foreign.create entry_inserted entry_updated entry_deleted
-  let entry_inserted = Self.foreign "entry_inserted" (t @-> returning (funptr entry_fun))
-  let entry_updated = Self.foreign "entry_updated" (t @-> returning (funptr entry_fun))
-  let entry_deleted = Self.foreign "entry_deleted" (t @-> returning (funptr entry_fun))
-end
-include I
-module type S = module type of I
-end
-end
-
 
 module Object =
 struct
-module Make(Key:Coh_object.S) (Value:Coh_object.S) =
+module type S = S
+module Make(Key:Coh_object.S) (Value:Coh_object.S) S with module Key = Key and module Value = Value =
 struct
   module Parent = struct include Coh_map.Make(Key)(Value) end
   include Derived.Make(Key)(Value)(Coh_map)
 end
+end
 
-module Derived = struct
-module Make(Key:Coh_object.S) (Value:Coh_object.S)(Parent:Coh_object.T)
-= struct
-  include Derived.Make(Key)(Value)(Parent)
-end
-end
-end
-module Opaque = Object.Make(Coh_object.Opaque)(Coh_object.Opaque)
-
-module type S = Opaque.S
 module Pof =
 struct
 module type S =
@@ -138,6 +58,4 @@ module Make(Key:Pofable.S)(Value:Pofable.S)(T:Coh_object.T)
 = struct
   module Parent = struct include Coh_map.Derived.Make(Key)(Value)(T) end
   include Derived.Make(Key)(Value)(Coh_map)
-end
-end
 end
