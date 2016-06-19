@@ -137,6 +137,6 @@ end
 end
 
 module Make = Create.Object.Make
-module Opaque = Make(Create.Obj)
-include Opaque
+module Object = Make(Create.Obj)
+include Object
 module type S = Create.Object.S

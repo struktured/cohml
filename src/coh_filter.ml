@@ -4,7 +4,6 @@ sig
   (* TODO *)
 end
 
-module I = struct include Coh_object.Opaque end
-
+include Coh_object.Make(struct type t let name = "Filter" end)
 let noop = failwith("nyi")
 

@@ -29,7 +29,7 @@ struct
     : S with module Key = Key and module Value = Value =
   struct
     include Coh_map.Derived.Make(Key)(Value)(T)
-    module Filter = Coh_filter.I (*TODO *)
+    module Filter = Coh_filter (*TODO *)
     module Foreign =
     struct
       open Ctypes

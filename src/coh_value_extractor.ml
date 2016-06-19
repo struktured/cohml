@@ -3,5 +3,5 @@ sig
   include Coh_object.S
 end
 
-module I = Coh_object.Opaque
+include Coh_object.Make(struct type t let name = "ValueExtractor" end)
 

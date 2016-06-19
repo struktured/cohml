@@ -13,7 +13,7 @@ sig
 end
 module I : S =
 struct
-  include Coh_object.Opaque
+  include Coh_object.Make(struct type t let name = "PofContext" end)
   module Coh_class = Coh_class
   let register t  ~user_type coh_class = failwith("nyi")
 end

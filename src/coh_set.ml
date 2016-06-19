@@ -17,4 +17,4 @@ struct
   include Derived.Make(Object)(struct type t let name = "Set" end)
 end
 
-include Make(Coh_object.Opaque)
+include Make(Coh_object)

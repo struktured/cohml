@@ -41,8 +41,8 @@ struct
       module Object = Entry
     end
 
-  module Filter = Coh_filter.I (* TODO *)
-  module Value_extractor = Coh_value_extractor.I (* TODO *)
+  module Filter = Coh_filter (* TODO *)
+  module Value_extractor = Coh_value_extractor (* TODO *)
   let key_set ?filter t = failwith("nyi")
   let entry_set ?compare ?filter t = failwith("nyi")
   let add_index ?compare value_extractor ~ordered = failwith("nyi")
@@ -52,5 +52,5 @@ end
 module Make(Key:Pofable.S) (Value:Pofable.S) :
   S with module Key = Key and module Value = Value =
   struct
-    include Make_derived(Key)(Value)(Coh_object.Opaque)
+    include Make_derived(Key)(Value)(struct type t let name = "QueryMap" end)
   end
