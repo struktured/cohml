@@ -3,8 +3,7 @@ sig
   module T : Coh_object.T
   module Key : Coh_object.S
   module Value : Coh_object.S
-  include module type of Coh_observable_map.Object.Derived.Make(Key)(Value)(T)
-    with module Key := Key and module Value := Value and module Self.T = T
+  include module type of Coh_observable_map.Derived.Make(Key)(Value)(T) with module Key := Key and module Value := Value
 end
 
 module Pof =
@@ -30,5 +29,4 @@ end
 end
 
 module Make = Object.Make
-module Opaque = Make(Coh_object.Opaque)(Coh_object.Opaque)
-include Opaque.I
+include Make(Coh_object)(Coh_object)
