@@ -29,6 +29,7 @@ module Derived = struct
 module Make(Key:Coh_object.S)(Value:Coh_object.S)(T:Coh_object.T) :
 S with module Key = Key and module Value = Value and module Self.T = T =
 struct
+
   module Key = Key
   module Value = Value
   include Coh_object.Make(T)
@@ -54,19 +55,7 @@ struct
 end (* Derived.Make *)
 end (* Derived *)
 module Make(Key:Coh_object.S)(Value:Coh_object.S) =
-  Derived.Make(Key)(Value)(Coh_object.Opaque)
-(*
-module Pof = struct
-module type S =
-  sig
-    module Key : Pofable.S
-    module Value : Pofable.S
-    module Entry : Entry.Pof.S with module Key = Key and module Value = Value
-    include Object.S with module Key := Key and module Value := Value and module Entry := Entry
-  end (* Pof.S *)
-
-end (* Pof *)
-*)
+  Derived.Make(Key)(Value)(struct type t let name = "Map" end)
 
 module Opaque = Make(Coh_object.Opaque)(Coh_object.Opaque)
 include Opaque

@@ -6,3 +6,5 @@ end
 
 module I = struct include Coh_object.Opaque end
 
+let noop = failwith("nyi")
+
