@@ -1,3 +1,5 @@
+open Ctypes
+open Foreign
 open Coh_primitives
 module type S =
 sig
@@ -50,11 +52,46 @@ sig
   val read_remainder : t -> Coh_binary.View.t
 end
 
-module External =
+
+include Coh_object.Make(struct type t let name = "PofReader" end)
+
+module Foreign =
 struct
-  type t
-  external read_int32 : t -> index:int -> Int32.t = "read_int32"
-  external read_string : t -> index:int -> string = "read_string"
+  let read_boolean = Self.foreign "read_boolean" 
+      (t @-> int @-> returning bool)
+  let read_octet = Self.foreign "read_octet" 
+      (t @-> int @-> returning int)
+  let read_char16 = Self.foreign "read_char16"
+      (t @-> int @-> returning Ctypes.char)
+  let read_int16 = Self.foreign "read_int16" 
+      (t @-> int @-> returning int)
+  let read_int32 = Self.foreign "read_int32"
+      (t @-> int @-> returning int)
+  let read_int64 =Self.foreign "read_int64"
+      (t @-> int @-> returning int)
+  let read_float32 = Self.foreign "read_float32_array"
+      (t @-> int @-> returning float)
+  let read_float64 = Self.foreign "read_float64_array"
+      (t @-> int @-> returning float)
+  let read_boolean_array = Self.foreign "read_boolean_array"
+      (t @-> int @-> returning (Coh_array
+  let read_char16_array = Self.foreign "read_char16_array"
+      (t @-> int @-> returning char array)
+  let read_octet_array = Self.foreign "read_octet_array"
+      (t @-> int @-> returning int array)
+  let read_int16_array = Self.foreign "read_int16_array"
+      (t @-> int @-> returning int array)
+  let read_int32_array = Self.foreign "read_int32_array"
+      (t @-> int @-> returning int32 array)
+  let read_int64_array = Self.foreign "read_int64_array"
+      (t @-> int @-> returning int64 array)
+  let read_float32_array = Self.foreign "read_float32_array"
+      (t @-> int @-> returning float array)
+  let read_float64_array = Self.foreign "read_float64_array"
+      (t @-> int @-> returning float array)
+  let read_binary = Self.foreign "read_binary"
+      (t @-> int @-> returning Coh_binary.View.t)
+  let read_string = Self.foreign "read_string"
+      (t @-> int @-> returning string)
 end
-include External
 
