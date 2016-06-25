@@ -19,8 +19,8 @@ struct
   include Coh_object.Make(struct type t let name = "Entry" end)
   let get_key = Self.foreign "get_key" (t @-> returning Key.View.t)
   let get_value = Self.foreign "get_value"
-    (t @-> returning @@ ptr_opt Value.Holder.Self.t)
+    (t @-> returning @@ Value.Holder.t_opt)
   let set_value = Self.foreign "set_value" (t @-> Value.Holder.t @->
-    returning @@ ptr_opt Value.Holder.Self.t)
+    returning @@ Value.Holder.t_opt)
 end
 
